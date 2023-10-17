@@ -16,7 +16,7 @@ let polyline // La polyline en cours de construction;
 
 const polylineMachine = createMachine(
     {
-        /** @xstate-layout N4IgpgJg5mDOIC5QAcD2AbAngGQJYDswA6XCdMAYgFkB5AVQGUBRAYWwEkWBpAbQAYAuohSpYuAC65U+YSAAeiAMwA2IgBY+mgIx8NATgCsBvWuUAaEJkQBaAExqifAOx8AHFpcHbfRX2V+AXwCLNCw8QiIAETgxfAACAGoIMDi0AnFYanpmWgA1Jn4hJBA0MUlpWQUENRqiRUUDLS01Iw8PZQMLKwRrZodlWwGBrVcVPWU9IJCMHAJiaNhYuK00-HEsxlYObkLZUokpGWKqxXH1FxUJg1O9Vz5Oy0RXWyIJ5ScTAw7lCdtbKZKM3C8xiBESyVSqHSmQAQgBDADGAGtYMhEWBdsV9uUjqAqjoPnUGuMWipFGpbF1EDo+ERRlpbL4dFoVE5GQDQrMIgslkkUqsMhQmGswAAnTEiMqHSqIbxaOp8PRsslONTPVyuKk9RmKIiGPwmZrKLQDCkcoFzKKg+IrKFrIWwBFw5AYwR7UQHCrHRAGVx02weAymd7XY1qLUMv0BgwfZQNH56Nz-YKAsKWnlgvmQ6EOp0uiWAqVevHUr56ln+DyMxN6QxaxmqO4fDW2PTktXJ6Zp7nW8H8u2C2ibNicXhurEenEyhA6WrKlpBmODX1a3oqIhOVXuPgEmMeNTm7sgxaZiECzJDnI0fI8LRFSWe3HyJ5uOm+Ny+FxqJrhx4IRStnq9hkguSo+E4QQpvgqDJPAE5Hu6RZPlUvS1BomgGq4nytpqf7WAB8q2AYfiuE45J3Puh5csQpDkIhj7TtYZzoZoExYS0OGrvKygtO4xHKO4EwMm4VHAlaJ42gK9FTt6CC2E4frGLWtaKAywm4d0vSvLxJpqHokabuMnaptR4m8meA5wQ+MklggzwODu9y3DhqmnFx2m+rp+m2KRHxKpBARAA */
+        /** @xstate-layout N4IgpgJg5mDOIC5QAcD2AbAngGQJYDswA6XCdMAYgFkB5AVQGUBRAYWwEkWBpAbQAYAuohSpYuAC65U+YSAAeiAMwA2IgBY+mgIx8NATgCsBvWuUAaEJkQBaAExqifAOx8AHFpcHbfRX2V+AXwCLNCw8QiIAETgxfC00AnEKJlgAYwBDZDB+ISQQNDFJaVkFBANXIldbDwNTZScDFS01CysELVsK6oMnPWVFA2VlPTdbIJCMHAJiaNhY+NRE6npmWgA1JhzZAokpGTzStSOiRQGtZqMPD2UDVptmh2VbJ6etVxU+vXH8yfCZmIICyWtEYrA43C2eR2RX2oFKZyIelcalsl1crgMfA6TjuCGUFS0vlcej0ThUtjJ+O+oSmEVmsVsEDACXw4lgy1B602gm2ol2xQOiFcTicRCMahUgw8JL0Wlxvj4lWuVQMWmGR2R1N+0yiAPwjOZi1Z7IAQulUgBrWDIc3ZHlQvkwkqIHS9E4DPpqRr9FG4nSK94dXw6Qn1WyKLVhHX0ggGlls5KssAAJ0hIkKe2dCG8WhOfFJ4f6TjUVXRuLsp0RmPVzWUavsY2CPyjdL1caNCZBzDYnF49vT-Nh8hdugcTnDXtqPWe5XLoaIIpLIecPQ8akjtP+c1jTPj7JSGSyaZ+GYFcKUXqIyhR+Il4be50UuM6igXI1lfFs1TeAyCTfwqBMvADotmAvKnkOpTWA86iaJowzEl6thIuWijVEQqJ+MSJiKH0ThaBufwkGQYEOhBWbWH0sFwQhJheChlj3FeXruNW7jDB0biEdGepAqy4GDlmFIVMYMp6IoHSca4c7MeUapqLKnQin0jYTKBurbvqu4dsBA5OoKCBVA4WJ8MYVRIhJuEydecnXopwq9KSf4BEAA */
         id: "polyLine",
 
         initial: "idle",
@@ -25,34 +25,42 @@ const polylineMachine = createMachine(
             idle: {
                 on: {
                     MOUSECLICK: {
-                        target: "Dessin 1point",
+                        target: "Dessin1point",
                         actions: "createLine"
                     }
                 }
             },
 
-            "Dessin 1point": {
+            Dessin1point: {
                 on: {
                     Escape: {
                         target: "idle",
                         actions: "abandon"
+                    },
+
+                    MOUSEMOVE: {
+                        target: "Dessin1point",
+                        actions: "setLastPoint",
+                        internal: true
+                    },
+
+                    MOUSECLICK: {
+                        target: "Dessin2depoints",
+                        actions: "addPoint"
                     }
                 }
             },
 
-            "Dessin +de points": {
+            Dessin2depoints: {
                 on: {
-                    MOUSEMOVE: [{
-                        target: "Dessin 1point",
+                    MOUSEMOVE: {
+                        target: "Dessin2depoints",
                         actions: "setLastPoint",
-                        cond: "currentsPoints.length = 3"
-                    }, {
-                        target: "Dessin +de points",
                         internal: true
-                    }],
+                    },
 
                     Backspace: {
-                        target: "Dessin +de points",
+                        target: "Dessin2depoints",
                         actions: "removeLastPoint",
                         internal: true
                     },
@@ -62,13 +70,17 @@ const polylineMachine = createMachine(
                         actions: "saveLine"
                     },
 
-                    Escape: "idle",
-
                     MOUSECLICK: {
-                        target: "Dessin +de points",
+                        target: "Dessin2depoints",
+                        actions: "addPoint",
                         internal: true,
                         cond: "pasPlein"
-                    }
+                    },
+
+                    Escape: {
+                        target: "idle",
+                        actions: "abandon"
+                    },
                 }
             }
         }
